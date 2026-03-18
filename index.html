@@ -596,23 +596,27 @@
       color: var(--ink);
     }
 
-    .note-status {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      text-align: right;
+    .note-editor-frame {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
     }
 
     .chapter-notes textarea {
+      display: block;
       width: 100%;
-      min-height: 130px;
-      resize: vertical;
+      min-width: 100%;
+      min-height: 220px;
+      resize: both;
       padding: 14px 15px;
       border-radius: 12px;
       border: 1px solid #c8d4e2;
       background: #ffffff;
       color: var(--ink);
       box-shadow: inset 0 1px 0 rgba(18, 39, 72, 0.04);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      max-width: none;
     }
 
     .chapter-notes textarea:focus {
@@ -620,10 +624,119 @@
       border-color: rgba(47, 93, 159, 0.5);
     }
 
+    .chapter-notes textarea.just-saved {
+      border-color: var(--accent);
+      background: #fcfeff;
+      box-shadow:
+        inset 0 1px 0 rgba(18, 39, 72, 0.04),
+        0 0 0 4px rgba(18, 39, 72, 0.05);
+    }
+
     .note-actions {
       display: flex;
-      justify-content: flex-end;
-      margin-top: 12px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .save-feedback {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+      padding: 10px 14px;
+      border: 1px solid #c8d4e2;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .save-feedback.just-saved {
+      animation: savePulse 0.55s ease;
+    }
+
+    .save-feedback.is-saved {
+      border-color: var(--accent);
+      box-shadow: 0 10px 20px rgba(18, 39, 72, 0.08);
+    }
+
+    .save-feedback.is-error {
+      border-color: #cf6d58;
+    }
+
+    .save-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #c8d4e2;
+      color: #a2afbf;
+      background: #ffffff;
+      font-size: 0.98rem;
+      font-weight: 800;
+      line-height: 1;
+      transition:
+        transform 0.2s ease,
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .save-feedback.is-saved .save-icon {
+      color: #ffffff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .save-feedback.is-unsaved .save-icon {
+      color: var(--accent);
+      border-color: rgba(47, 93, 159, 0.28);
+    }
+
+    .save-feedback.is-error .save-icon {
+      color: #ffffff;
+      background: #cf6d58;
+      border-color: #cf6d58;
+    }
+
+    .save-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .save-label {
+      margin: 0;
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .note-status {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.25;
+    }
+
+    .timestamp {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
 
     .save-btn {
@@ -635,10 +748,20 @@
       background: var(--accent);
       cursor: pointer;
       box-shadow: 0 10px 18px rgba(18, 39, 72, 0.14);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
     }
 
     .save-btn:hover {
       filter: brightness(0.96);
+    }
+
+    .save-btn.just-saved {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 14px 22px rgba(18, 39, 72, 0.18);
+    }
+
+    .save-btn:active {
+      transform: translateY(1px);
     }
 
     .takeaway {
@@ -861,9 +984,18 @@
         rgba(255, 255, 255, 0.2);
     }
 
-    .timestamp {
-      font-weight: 700;
-      color: var(--accent);
+    @keyframes savePulse {
+      0% {
+        transform: scale(0.98);
+      }
+
+      55% {
+        transform: scale(1.02);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
 
     @media (max-width: 1120px) {
@@ -955,8 +1087,12 @@
         align-items: flex-start;
       }
 
-      .note-status {
-        text-align: left;
+      .note-actions {
+        align-items: stretch;
+      }
+
+      .save-feedback {
+        width: 100%;
       }
     }
 
@@ -1237,10 +1373,21 @@
             <div class="chapter-notes-inner">
               <div class="note-bar">
                 <p class="note-title">Chapter ${chapter.number} notes</p>
-                <p class="note-status" data-status>Notes are saved in this browser.</p>
               </div>
-              <textarea data-note-input placeholder="Add notes for ${safeTitle}..."></textarea>
+              <div class="note-editor-frame">
+                <textarea data-note-input placeholder="Add notes for ${safeTitle}..."></textarea>
+              </div>
               <div class="note-actions">
+                <div class="save-feedback" data-save-feedback aria-live="polite">
+                  <span class="save-icon" aria-hidden="true" data-save-icon">&#10003;</span>
+                  <div class="save-copy">
+                    <p class="save-label" data-save-label>Ready to save</p>
+                    <p class="note-status">
+                      <span data-status-prefix>Last saved</span>
+                      <span class="timestamp" data-timestamp>Not yet</span>
+                    </p>
+                  </div>
+                </div>
                 <button type="button" class="save-btn" data-save-btn>Save</button>
               </div>
             </div>
@@ -1318,15 +1465,37 @@
 
     const readNote = (chapterNumber) => {
       try {
-        return localStorage.getItem(storageKey(chapterNumber));
+        const rawValue = localStorage.getItem(storageKey(chapterNumber));
+
+        if (!rawValue) {
+          return { value: "", savedAt: null };
+        }
+
+        try {
+          const parsed = JSON.parse(rawValue);
+
+          if (parsed && typeof parsed === "object" && typeof parsed.value === "string") {
+            return {
+              value: parsed.value,
+              savedAt: typeof parsed.savedAt === "string" ? parsed.savedAt : null
+            };
+          }
+        } catch (error) {
+          return { value: rawValue, savedAt: null };
+        }
+
+        return { value: rawValue, savedAt: null };
       } catch (error) {
-        return null;
+        return { value: "", savedAt: null, unavailable: true };
       }
     };
 
-    const writeNote = (chapterNumber, value) => {
+    const writeNote = (chapterNumber, value, savedAt) => {
       try {
-        localStorage.setItem(storageKey(chapterNumber), value);
+        localStorage.setItem(
+          storageKey(chapterNumber),
+          JSON.stringify({ value, savedAt })
+        );
         return true;
       } catch (error) {
         return false;
@@ -1339,8 +1508,21 @@
       panel.style.opacity = "1";
     };
 
-    const setStatus = (statusNode, message) => {
-      statusNode.innerHTML = message;
+    const formatTimestamp = (savedAt, hasValue) => {
+      if (!savedAt) return hasValue ? "Previously" : "Not yet";
+
+      const date = new Date(savedAt);
+
+      if (Number.isNaN(date.getTime())) {
+        return "Unknown";
+      }
+
+      return date.toLocaleString([], {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
     };
 
     document.querySelectorAll(".chapter-item").forEach((item) => {
@@ -1349,13 +1531,59 @@
       const panel = item.querySelector(".chapter-notes");
       const input = item.querySelector("[data-note-input]");
       const saveButton = item.querySelector("[data-save-btn]");
-      const status = item.querySelector("[data-status]");
+      const feedback = item.querySelector("[data-save-feedback]");
+      const saveLabel = item.querySelector("[data-save-label]");
+      const statusPrefix = item.querySelector("[data-status-prefix]");
+      const timestamp = item.querySelector("[data-timestamp]");
       const saved = readNote(chapterNumber);
+      let lastSavedValue = saved.value || "";
+      let lastSavedAt = saved.savedAt || null;
+      let flashTimer = null;
 
-      if (saved) {
-        input.value = saved;
-        setStatus(status, `Saved notes loaded for Chapter ${chapterNumber}.`);
+      const setFeedbackState = (state) => {
+        feedback.classList.remove("is-saved", "is-unsaved", "is-error");
+
+        if (state === "saved") {
+          feedback.classList.add("is-saved");
+          saveLabel.textContent = "Saved";
+        } else if (state === "unsaved") {
+          feedback.classList.add("is-unsaved");
+          saveLabel.textContent = "Unsaved changes";
+        } else if (state === "error") {
+          feedback.classList.add("is-error");
+          saveLabel.textContent = "Save unavailable";
+        } else {
+          saveLabel.textContent = "Ready to save";
+        }
+
+        statusPrefix.textContent = "Last saved";
+        timestamp.textContent = formatTimestamp(lastSavedAt, Boolean(lastSavedValue));
+      };
+
+      const triggerSaveFeedback = () => {
+        feedback.classList.remove("just-saved");
+        saveButton.classList.remove("just-saved");
+        input.classList.remove("just-saved");
+
+        window.requestAnimationFrame(() => {
+          feedback.classList.add("just-saved");
+          saveButton.classList.add("just-saved");
+          input.classList.add("just-saved");
+        });
+
+        window.clearTimeout(flashTimer);
+        flashTimer = window.setTimeout(() => {
+          feedback.classList.remove("just-saved");
+          saveButton.classList.remove("just-saved");
+          input.classList.remove("just-saved");
+        }, 1500);
+      };
+
+      if (lastSavedValue) {
+        input.value = lastSavedValue;
       }
+
+      setFeedbackState(lastSavedValue || lastSavedAt ? "saved" : "idle");
 
       toggle.addEventListener("click", () => {
         const isOpen = item.classList.contains("open");
@@ -1379,26 +1607,38 @@
         if (item.classList.contains("open")) {
           resizeOpenPanel(panel);
         }
+
+        setFeedbackState(input.value === lastSavedValue ? "saved" : "unsaved");
       });
 
       saveButton.addEventListener("click", () => {
-        const savedOkay = writeNote(chapterNumber, input.value);
+        const savedAt = new Date().toISOString();
+        const savedOkay = writeNote(chapterNumber, input.value, savedAt);
 
         if (!savedOkay) {
-          setStatus(status, "Browser storage is unavailable for saving notes.");
+          setFeedbackState("error");
           return;
         }
 
-        const timestamp = new Date().toLocaleTimeString([], {
-          hour: "numeric",
-          minute: "2-digit"
-        });
-        setStatus(status, `Saved at <span class="timestamp">${timestamp}</span>.`);
+        lastSavedValue = input.value;
+        lastSavedAt = savedAt;
+        setFeedbackState("saved");
+        triggerSaveFeedback();
 
         if (item.classList.contains("open")) {
           resizeOpenPanel(panel);
         }
       });
+
+      if (window.ResizeObserver) {
+        const observer = new ResizeObserver(() => {
+          if (item.classList.contains("open")) {
+            resizeOpenPanel(panel);
+          }
+        });
+
+        observer.observe(input);
+      }
     });
 
     window.addEventListener("resize", () => {
