@@ -784,6 +784,97 @@
       font-size: 0.85rem;
     }
 
+    .disclaimer-sheet {
+      padding-top: 34px;
+      padding-bottom: 46px;
+    }
+
+    .disclaimer-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px 28px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .disclaimer-layout {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .disclaimer-cover-wrap {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .disclaimer-cover-link {
+      display: inline-flex;
+      border-radius: 14px;
+    }
+
+    .disclaimer-cover-link:focus-visible {
+      outline: 3px solid rgba(47, 93, 159, 0.28);
+      outline-offset: 4px;
+    }
+
+    .disclaimer-cover {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 180px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(161, 182, 205, 0.72);
+      box-shadow: 0 12px 28px rgba(18, 39, 72, 0.12);
+      background: #dce7f2;
+      flex: none;
+    }
+
+    .disclaimer-body {
+      min-width: 0;
+    }
+
+    .disclaimer-kicker {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 132px;
+      padding: 7px 16px;
+      background: var(--pill);
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .disclaimer-title {
+      margin: 0 0 12px;
+      font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .disclaimer-copy {
+      margin: 0;
+      max-width: 980px;
+      color: #45546a;
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .disclaimer-copy + .disclaimer-copy {
+      margin-top: 12px;
+    }
+
+    .disclaimer-copy strong {
+      color: var(--accent);
+    }
+
     .part-art {
       position: relative;
       overflow: hidden;
@@ -1094,6 +1185,16 @@
       .save-feedback {
         width: 100%;
       }
+
+      .disclaimer-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .disclaimer-cover-wrap {
+        justify-content: flex-start;
+      }
     }
 
     @media (max-width: 560px) {
@@ -1117,6 +1218,14 @@
       .chapter-notes-inner {
         padding-left: 14px;
         padding-right: 14px;
+      }
+
+      .disclaimer-card {
+        padding: 18px 18px 20px;
+      }
+
+      .disclaimer-cover {
+        max-width: 150px;
       }
     }
   </style>
@@ -1189,6 +1298,46 @@
   <div class="band"></div>
 
   <div id="parts-root"></div>
+
+  <div class="band"></div>
+
+  <section class="sheet disclaimer-sheet" style="--accent:#214f80;--pill:#dbe7f4;">
+    <div class="sheet-inner">
+      <section class="disclaimer-card" aria-labelledby="disclaimer-title">
+        <div class="disclaimer-layout">
+          <div class="disclaimer-cover-wrap">
+            <a
+              class="disclaimer-cover-link"
+              href="https://www.amazon.com/Teaching-AI-Practical-Guide-Learning/dp/1421453398"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View Teaching with AI on Amazon"
+            >
+              <img
+                class="disclaimer-cover"
+                src="Book.png"
+                alt="Book cover of Teaching with AI: A Practical Guide to a New Era of Human Learning, Second Edition"
+              />
+            </a>
+          </div>
+
+          <div class="disclaimer-body">
+            <div class="disclaimer-kicker">Disclaimer</div>
+            <h2 class="disclaimer-title" id="disclaimer-title">About This Learning Page</h2>
+            <p class="disclaimer-copy">
+              This webpage is derived from <strong><em>Teaching with AI: A Practical Guide to a New Era of Human Learning (Second Edition)</em></strong> by <strong>José Antonio Bowen</strong> and <strong>C. Edward Watson</strong>.
+            </p>
+            <p class="disclaimer-copy">
+              It is designed as a collaborative learning and note-taking tool that helps readers engage with the book’s chapters interactively, organize ideas, and record reflections while reading.
+            </p>
+            <p class="disclaimer-copy">
+              This page is <strong>not a replacement for the book</strong>. It is a supplement intended to support and enhance the reading experience alongside the original text.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
 
   <script>
     const parts = [
