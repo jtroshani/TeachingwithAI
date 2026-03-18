@@ -764,52 +764,6 @@
       transform: translateY(1px);
     }
 
-    .save-history {
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(200, 212, 226, 0.9);
-    }
-
-    .save-history-label {
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .save-history-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      max-height: 96px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .save-history-chip,
-    .save-history-empty {
-      display: inline-flex;
-      align-items: center;
-      min-height: 32px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #c8d4e2;
-      background: rgba(255, 255, 255, 0.92);
-      color: #4e6076;
-      font-size: 0.84rem;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-
-    .save-history-chip.is-latest {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--soft);
-      font-weight: 700;
-    }
-
     .takeaway {
       margin-top: 16px;
       border-radius: 8px;
@@ -1436,12 +1390,6 @@
                 </div>
                 <button type="button" class="save-btn" data-save-btn>Save</button>
               </div>
-              <div class="save-history">
-                <p class="save-history-label">Save timestamps</p>
-                <div class="save-history-list" data-save-history aria-live="polite">
-                  <span class="save-history-empty">No saves yet</span>
-                </div>
-              </div>
             </div>
           </div>
         </article>
@@ -1520,41 +1468,37 @@
         const rawValue = localStorage.getItem(storageKey(chapterNumber));
 
         if (!rawValue) {
-          return { value: "", savedAt: null, history: [] };
+          return { value: "", savedAt: null };
         }
 
         try {
           const parsed = JSON.parse(rawValue);
 
           if (parsed && typeof parsed === "object" && typeof parsed.value === "string") {
-            const history = Array.isArray(parsed.history)
-              ? parsed.history.filter((entry) => typeof entry === "string")
-              : (typeof parsed.savedAt === "string" ? [parsed.savedAt] : []);
             const savedAt = typeof parsed.savedAt === "string"
               ? parsed.savedAt
-              : (history[history.length - 1] || null);
+              : (Array.isArray(parsed.history) ? parsed.history[parsed.history.length - 1] || null : null);
 
             return {
               value: parsed.value,
-              savedAt,
-              history
+              savedAt
             };
           }
         } catch (error) {
-          return { value: rawValue, savedAt: null, history: [] };
+          return { value: rawValue, savedAt: null };
         }
 
-        return { value: rawValue, savedAt: null, history: [] };
+        return { value: rawValue, savedAt: null };
       } catch (error) {
-        return { value: "", savedAt: null, history: [], unavailable: true };
+        return { value: "", savedAt: null, unavailable: true };
       }
     };
 
-    const writeNote = (chapterNumber, value, savedAt, history) => {
+    const writeNote = (chapterNumber, value, savedAt) => {
       try {
         localStorage.setItem(
           storageKey(chapterNumber),
-          JSON.stringify({ value, savedAt, history })
+          JSON.stringify({ value, savedAt })
         );
         return true;
       } catch (error) {
@@ -1596,28 +1540,10 @@
       const saveLabel = item.querySelector("[data-save-label]");
       const statusPrefix = item.querySelector("[data-status-prefix]");
       const timestamp = item.querySelector("[data-timestamp]");
-      const historyList = item.querySelector("[data-save-history]");
       const saved = readNote(chapterNumber);
       let lastSavedValue = saved.value || "";
-      let saveHistory = Array.isArray(saved.history) ? saved.history : [];
-      let lastSavedAt = saved.savedAt || saveHistory[saveHistory.length - 1] || null;
+      let lastSavedAt = saved.savedAt || null;
       let flashTimer = null;
-
-      const renderSaveHistory = () => {
-        if (!saveHistory.length) {
-          historyList.innerHTML = '<span class="save-history-empty">No saves yet</span>';
-          return;
-        }
-
-        historyList.innerHTML = saveHistory
-          .slice()
-          .reverse()
-          .map((entry, index) => {
-            const latestClass = index === 0 ? " is-latest" : "";
-            return `<span class="save-history-chip${latestClass}">${formatTimestamp(entry, true)}</span>`;
-          })
-          .join("");
-      };
 
       const setFeedbackState = (state) => {
         feedback.classList.remove("is-saved", "is-unsaved", "is-error");
@@ -1662,7 +1588,6 @@
         input.value = lastSavedValue;
       }
 
-      renderSaveHistory();
       setFeedbackState(lastSavedValue || lastSavedAt ? "saved" : "idle");
 
       toggle.addEventListener("click", () => {
@@ -1693,8 +1618,7 @@
 
       saveButton.addEventListener("click", () => {
         const savedAt = new Date().toISOString();
-        const nextHistory = [...saveHistory, savedAt];
-        const savedOkay = writeNote(chapterNumber, input.value, savedAt, nextHistory);
+        const savedOkay = writeNote(chapterNumber, input.value, savedAt);
 
         if (!savedOkay) {
           setFeedbackState("error");
@@ -1702,9 +1626,7 @@
         }
 
         lastSavedValue = input.value;
-        saveHistory = nextHistory;
         lastSavedAt = savedAt;
-        renderSaveHistory();
         setFeedbackState("saved");
         triggerSaveFeedback();
 
