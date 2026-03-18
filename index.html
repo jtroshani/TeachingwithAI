@@ -432,6 +432,15 @@
       font-size: 0.98rem;
     }
 
+    .part-note {
+      margin: 12px 0 0;
+      max-width: 940px;
+      color: #5d6c82;
+      font-size: 0.87rem;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
     .chapter-table {
       margin-top: 26px;
     }
@@ -1545,6 +1554,8 @@
       `;
     };
 
+    const partNoteText = "Click a chapter to expand it and add your notes. Select Save to store your notes locally in this browser on this device. Saved notes stay in this browser until they are cleared, and they are not automatically shared with other devices or users.";
+
     const renderSection = (part, index) => `
       <section class="sheet" style="--accent:${part.accent};--pill:${part.pill};--soft:${part.soft};">
         <div class="sheet-inner">
@@ -1555,6 +1566,7 @@
                 <div>
                   <h2 class="part-title">${part.title}</h2>
                   <p class="part-subtitle">${part.subtitle}</p>
+                  <p class="part-note">${partNoteText}</p>
                 </div>
               </div>
 
